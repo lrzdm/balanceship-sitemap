@@ -2,6 +2,18 @@ from flask import Flask, Response
 
 app = Flask(__name__)
 
+# Google Analytics tag (sostituisci con il tuo ID)
+GA_TAG = '''
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-PMRTNWT1ZZ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-PMRTNWT1ZZ');
+</script>
+'''
+
 # Homepage SEO
 @app.route('/')
 def home():
@@ -10,6 +22,7 @@ def home():
     <html lang="en">
     <head>
         {verification_tag}
+        {GA_TAG}
         <title>Balanceship - Smart Financial Insights</title>
         <meta name="description" content="Balanceship helps you explore KPIs, dashboards, and financial data of listed companies in a visual, interactive way." />
     </head>
@@ -22,9 +35,10 @@ def home():
 
 @app.route('/Graph')
 def graph():
-    return '''
+    return f'''
     <html>
     <head>
+        {GA_TAG}
         <title>Company Financial Graphs - Balanceship</title>
         <meta name="description" content="View interactive financial graphs of public companies. Track revenue, profit, and key indicators over time." />
     </head>
@@ -37,9 +51,10 @@ def graph():
 
 @app.route('/Database')
 def database():
-    return '''
+    return f'''
     <html>
     <head>
+        {GA_TAG}
         <title>Financial Database - Balanceship</title>
         <meta name="description" content="Access a curated database of public companies with financial data from global stock exchanges." />
     </head>
@@ -52,9 +67,10 @@ def database():
 
 @app.route('/KPI_Dashboard')
 def kpi_dashboard():
-    return '''
+    return f'''
     <html>
     <head>
+        {GA_TAG}
         <title>KPI Dashboards - Balanceship</title>
         <meta name="description" content="Analyze KPIs like EBITDA, EPS, and Free Cash Flow through dashboards for better insights." />
     </head>
@@ -67,9 +83,10 @@ def kpi_dashboard():
 
 @app.route('/Who_we_are')
 def who_we_are():
-    return '''
+    return f'''
     <html>
     <head>
+        {GA_TAG}
         <title>Who We Are - Balanceship</title>
         <meta name="description" content="Learn about the mission, vision, and team behind Balanceship, your financial data partner." />
     </head>
