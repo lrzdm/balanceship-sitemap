@@ -114,7 +114,7 @@ def robots():
     robots_txt = '''User-agent: *
 Allow: /
 
-Sitemap: https://balanceship-sitemap.onrender.com/sitemap.xml'''
+Sitemap: https://sitemap.balanceship.net/sitemap.xml'''
     return Response(robots_txt, mimetype='text/plain')
 
 if __name__ == '__main__':
