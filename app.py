@@ -2,7 +2,7 @@ from flask import Flask, Response
 
 app = Flask(__name__)
 
-# Google Analytics tag (sostituisci con il tuo ID)
+# Google Analytics tag
 GA_TAG = '''
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-PMRTNWT1ZZ"></script>
@@ -14,15 +14,18 @@ GA_TAG = '''
 </script>
 '''
 
-# Homepage SEO
+# Meta tag per evitare indicizzazione diretta di sitemap.balanceship.net
+NOINDEX_META = '<meta name="robots" content="noindex, follow">'
+
 @app.route('/')
 def home():
-    verification_tag = '<meta name="google-site-verification" content="P8TBKoEhxpfTVVZF7CTXHNp9dQVC0ynMTo18I9xdzvo" />'
     return f'''
     <html lang="en">
     <head>
-        {verification_tag}
+        <meta name="google-site-verification" content="P8TBKoEhxpfTVVZF7CTXHNp9dQVC0ynMTo18I9xdzvo" />
         {GA_TAG}
+        {NOINDEX_META}
+        <link rel="canonical" href="https://balanceship.net/" />
         <title>Balanceship - Smart Financial Insights</title>
         <meta name="description" content="Balanceship helps you explore KPIs, dashboards, and financial data of listed companies in a visual, interactive way." />
     </head>
@@ -39,6 +42,8 @@ def graph():
     <html>
     <head>
         {GA_TAG}
+        {NOINDEX_META}
+        <link rel="canonical" href="https://balanceship.net/Graph" />
         <title>Company Financial Graphs - Balanceship</title>
         <meta name="description" content="View interactive financial graphs of public companies. Track revenue, profit, and key indicators over time." />
     </head>
@@ -55,6 +60,8 @@ def database():
     <html>
     <head>
         {GA_TAG}
+        {NOINDEX_META}
+        <link rel="canonical" href="https://balanceship.net/Database" />
         <title>Financial Database - Balanceship</title>
         <meta name="description" content="Access a curated database of public companies with financial data from global stock exchanges." />
     </head>
@@ -71,6 +78,8 @@ def kpi_dashboard():
     <html>
     <head>
         {GA_TAG}
+        {NOINDEX_META}
+        <link rel="canonical" href="https://balanceship.net/KPI_Dashboard" />
         <title>KPI Dashboards - Balanceship</title>
         <meta name="description" content="Analyze KPIs like EBITDA, EPS, and Free Cash Flow through dashboards for better insights." />
     </head>
@@ -87,6 +96,8 @@ def who_we_are():
     <html>
     <head>
         {GA_TAG}
+        {NOINDEX_META}
+        <link rel="canonical" href="https://balanceship.net/Who_we_are" />
         <title>Who We Are - Balanceship</title>
         <meta name="description" content="Learn about the mission, vision, and team behind Balanceship, your financial data partner." />
     </head>
