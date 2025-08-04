@@ -25,7 +25,7 @@ def home():
         <meta name="google-site-verification" content="P8TBKoEhxpfTVVZF7CTXHNp9dQVC0ynMTo18I9xdzvo" />
         {GA_TAG}
         {NOINDEX_META}
-        <link rel="canonical" href="https://balanceship.net/" />
+        <link rel="canonical" href="https://www.balanceship.net/" />
         <title>Balanceship - Smart Financial Insights</title>
         <meta name="description" content="Balanceship helps you explore KPIs, dashboards, and financial data of listed companies in a visual, interactive way." />
     </head>
@@ -43,7 +43,7 @@ def graph():
     <head>
         {GA_TAG}
         {NOINDEX_META}
-        <link rel="canonical" href="https://balanceship.net/Graph" />
+        <link rel="canonical" href="https://www.balanceship.net/Graph" />
         <title>Company Financial Graphs - Balanceship</title>
         <meta name="description" content="View interactive financial graphs of public companies. Track revenue, profit, and key indicators over time." />
     </head>
@@ -61,7 +61,7 @@ def database():
     <head>
         {GA_TAG}
         {NOINDEX_META}
-        <link rel="canonical" href="https://balanceship.net/Database" />
+        <link rel="canonical" href="https://www.balanceship.net/Database" />
         <title>Financial Database - Balanceship</title>
         <meta name="description" content="Access a curated database of public companies with financial data from global stock exchanges." />
     </head>
@@ -79,7 +79,7 @@ def kpi_dashboard():
     <head>
         {GA_TAG}
         {NOINDEX_META}
-        <link rel="canonical" href="https://balanceship.net/KPI_Dashboard" />
+        <link rel="canonical" href="https://www.balanceship.net/KPI_Dashboard" />
         <title>KPI Dashboards - Balanceship</title>
         <meta name="description" content="Analyze KPIs like EBITDA, EPS, and Free Cash Flow through dashboards for better insights." />
     </head>
@@ -97,7 +97,7 @@ def who_we_are():
     <head>
         {GA_TAG}
         {NOINDEX_META}
-        <link rel="canonical" href="https://balanceship.net/Who_we_are" />
+        <link rel="canonical" href="https://www.balanceship.net/Who_we_are" />
         <title>Who We Are - Balanceship</title>
         <meta name="description" content="Learn about the mission, vision, and team behind Balanceship, your financial data partner." />
     </head>
@@ -112,11 +112,11 @@ def who_we_are():
 def sitemap():
     sitemap_xml = '''<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://balanceship.net/</loc><lastmod>2025-01-16</lastmod><changefreq>weekly</changefreq><priority>1.0</priority></url>
-  <url><loc>https://balanceship.net/Database</loc><lastmod>2025-01-16</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://balanceship.net/KPI_Dashboard</loc><lastmod>2025-01-16</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://balanceship.net/Graph</loc><lastmod>2025-01-16</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://balanceship.net/Who_we_are</loc><lastmod>2025-01-16</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.balanceship.net/</loc><lastmod>2025-01-16</lastmod><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://www.balanceship.net/Database</loc><lastmod>2025-01-16</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.balanceship.net/KPI_Dashboard</loc><lastmod>2025-01-16</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.balanceship.net/Graph</loc><lastmod>2025-01-16</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.balanceship.net/Who_we_are</loc><lastmod>2025-01-16</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
 </urlset>'''
     return Response(sitemap_xml, mimetype='application/xml')
 
@@ -130,3 +130,4 @@ Sitemap: https://sitemap.balanceship.net/sitemap.xml'''
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
+
