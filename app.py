@@ -1,7 +1,17 @@
-from flask import Flask, Response
+from flask import Flask, Response, request, redirect
 
 app = Flask(__name__)
 
+@app.before_request
+def force_https_www():
+    url = request.url
+    if url.startswith("http://"):
+        url = url.replace("http://", "https://", 1)
+        return redirect(url, code=301)
+    if url.startswith("https://balanceship.net"):
+        url = url.replace("https://balanceship.net", "https://www.balanceship.net", 1)
+        return redirect(url, code=301)
+      
 # Google Analytics tag
 GA_TAG = '''
 <!-- Google tag (gtag.js) -->
@@ -130,4 +140,5 @@ Sitemap: https://sitemap.balanceship.net/sitemap.xml'''
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
+
 
