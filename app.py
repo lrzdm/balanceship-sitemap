@@ -15,12 +15,12 @@ def force_https_www():
 # Google Analytics tag
 GA_TAG = '''
 <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-PMRTNWT1ZZ"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-Q5FDX0L1H2"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-  gtag('config', 'G-PMRTNWT1ZZ');
+  gtag('config', 'G-Q5FDX0L1H2');
 </script>
 '''
 
@@ -140,5 +140,6 @@ Sitemap: https://sitemap.balanceship.net/sitemap.xml'''
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
+
 
 
