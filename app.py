@@ -2,17 +2,7 @@ from flask import Flask, Response, request, redirect
 
 app = Flask(__name__)
 
-@app.before_request
-def force_https_www():
-    url = request.url
-    if url.startswith("http://"):
-        url = url.replace("http://", "https://", 1)
-        return redirect(url, code=301)
-    if url.startswith("https://balanceship.net"):
-        url = url.replace("https://balanceship.net", "https://www.balanceship.net", 1)
-        return redirect(url, code=301)
-      
-# Google Analytics tag
+# --- Google Analytics ---
 GA_TAG = '''
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-Q5FDX0L1H2"></script>
@@ -24,9 +14,28 @@ GA_TAG = '''
 </script>
 '''
 
-# Meta tag per evitare indicizzazione diretta di sitemap.balanceship.net
-NOINDEX_META = '<meta name="robots" content="noindex, follow">'
+# --- Redirezioni verso HTTPS e www ---
+@app.before_request
+def force_https_www():
+    url = request.url
+    if url.startswith("http://"):
+        url = url.replace("http://", "https://", 1)
+        return redirect(url, code=301)
+    if url.startswith("https://balanceship.net"):
+        url = url.replace("https://balanceship.net", "https://www.balanceship.net", 1)
+        return redirect(url, code=301)
 
+# --- Gestione automatica del meta noindex ---
+def maybe_noindex():
+    """
+    Aggiunge il meta noindex solo se il dominio NON è www.balanceship.net.
+    Serve per evitare che sitemap.balanceship.net venga indicizzato.
+    """
+    if "www.balanceship.net" not in request.host:
+        return '<meta name="robots" content="noindex, follow">'
+    return ''
+
+# --- HOME ---
 @app.route('/')
 def home():
     return f'''
@@ -34,7 +43,7 @@ def home():
     <head>
         <meta name="google-site-verification" content="P8TBKoEhxpfTVVZF7CTXHNp9dQVC0ynMTo18I9xdzvo" />
         {GA_TAG}
-        {NOINDEX_META}
+        {maybe_noindex()}
         <link rel="canonical" href="https://www.balanceship.net/" />
         <title>Balanceship - Smart Financial Insights</title>
         <meta name="description" content="Balanceship helps you explore KPIs, dashboards, and financial data of listed companies in a visual, interactive way." />
@@ -46,13 +55,14 @@ def home():
     </html>
     '''
 
+# --- GRAPH ---
 @app.route('/Graph')
 def graph():
     return f'''
     <html>
     <head>
         {GA_TAG}
-        {NOINDEX_META}
+        {maybe_noindex()}
         <link rel="canonical" href="https://www.balanceship.net/Graph" />
         <title>Company Financial Graphs - Balanceship</title>
         <meta name="description" content="View interactive financial graphs of public companies. Track revenue, profit, and key indicators over time." />
@@ -64,13 +74,14 @@ def graph():
     </html>
     '''
 
+# --- DATABASE ---
 @app.route('/Database')
 def database():
     return f'''
     <html>
     <head>
         {GA_TAG}
-        {NOINDEX_META}
+        {maybe_noindex()}
         <link rel="canonical" href="https://www.balanceship.net/Database" />
         <title>Financial Database - Balanceship</title>
         <meta name="description" content="Access a curated database of public companies with financial data from global stock exchanges." />
@@ -82,13 +93,14 @@ def database():
     </html>
     '''
 
+# --- KPI DASHBOARD ---
 @app.route('/KPI_Dashboard')
 def kpi_dashboard():
     return f'''
     <html>
     <head>
         {GA_TAG}
-        {NOINDEX_META}
+        {maybe_noindex()}
         <link rel="canonical" href="https://www.balanceship.net/KPI_Dashboard" />
         <title>KPI Dashboards - Balanceship</title>
         <meta name="description" content="Analyze KPIs like EBITDA, EPS, and Free Cash Flow through dashboards for better insights." />
@@ -100,13 +112,14 @@ def kpi_dashboard():
     </html>
     '''
 
+# --- WHO WE ARE ---
 @app.route('/Who_we_are')
 def who_we_are():
     return f'''
     <html>
     <head>
         {GA_TAG}
-        {NOINDEX_META}
+        {maybe_noindex()}
         <link rel="canonical" href="https://www.balanceship.net/Who_we_are" />
         <title>Who We Are - Balanceship</title>
         <meta name="description" content="Learn about the mission, vision, and team behind Balanceship, your financial data partner." />
@@ -118,6 +131,7 @@ def who_we_are():
     </html>
     '''
 
+# --- SITEMAP ---
 @app.route('/sitemap.xml')
 def sitemap():
     sitemap_xml = '''<?xml version="1.0" encoding="UTF-8"?>
@@ -130,6 +144,7 @@ def sitemap():
 </urlset>'''
     return Response(sitemap_xml, mimetype='application/xml')
 
+# --- ROBOTS.TXT ---
 @app.route('/robots.txt')
 def robots():
     robots_txt = '''User-agent: *
@@ -138,8 +153,6 @@ Allow: /
 Sitemap: https://sitemap.balanceship.net/sitemap.xml'''
     return Response(robots_txt, mimetype='text/plain')
 
+# --- MAIN ---
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
-
-
-
