@@ -1,6 +1,10 @@
 from flask import Flask, Response, request, redirect
+import re
 
 app = Flask(__name__)
+
+# --- Configurazione ---
+STREAMLIT_URL = "https://balanceship.onrender.com"
 
 # --- Google Analytics ---
 GA_TAG = '''
@@ -14,27 +18,35 @@ GA_TAG = '''
 </script>
 '''
 
-# --- Redirezioni verso HTTPS e www ---
-@app.before_request
-def force_https_www():
-    url = request.url
-    if url.startswith("http://"):
-        url = url.replace("http://", "https://", 1)
-        return redirect(url, code=301)
-    # Commento questa parte perché il worker gestisce già www vs non-www
-    # if url.startswith("https://balanceship.net"):
-    #     url = url.replace("https://balanceship.net", "https://www.balanceship.net", 1)
-    #     return redirect(url, code=301)
+# --- Bot Detection ---
+def is_bot():
+    """Rileva se la richiesta proviene da un bot/crawler"""
+    ua = request.headers.get('User-Agent', '').lower()
+    bot_pattern = r'bot|crawler|spider|crawling|googlebot|bingbot|slurp|duckduckbot|baiduspider|yandexbot|facebot|ia_archiver'
+    return bool(re.search(bot_pattern, ua))
 
-# --- Gestione automatica del meta noindex ---
-def maybe_noindex():
-    """
-    Aggiunge il meta noindex solo se il dominio NON è www.balanceship.net.
-    Serve per evitare che sitemap.balanceship.net venga indicizzato.
-    """
-    if "www.balanceship.net" not in request.host and "balanceship.net" not in request.host:
-        return '<meta name="robots" content="noindex, follow">'
-    return ''
+# --- Middleware: Routing Bot vs Utenti ---
+@app.before_request
+def route_traffic():
+    """Gestisce HTTPS e routing bot vs utenti reali"""
+    # Force HTTPS
+    if request.url.startswith("http://"):
+        return redirect(request.url.replace("http://", "https://", 1), code=301)
+    
+    # Redirect www → non-www
+    if request.host.startswith("www."):
+        new_url = request.url.replace("://www.", "://", 1)
+        return redirect(new_url, code=301)
+    
+    # Se è un bot, Flask serve HTML statico (continua normalmente)
+    if is_bot():
+        return None
+    
+    # Se è un utente reale E non sta accedendo a sitemap/robots
+    # → Redirect a Streamlit
+    if request.path not in ['/robots.txt', '/sitemap.xml']:
+        target = STREAMLIT_URL + request.full_path.rstrip('?')
+        return redirect(target, code=302)
 
 # --- HOME ---
 @app.route('/')
@@ -47,7 +59,6 @@ def home():
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google-site-verification" content="P8TBKoEhxpfTVVZF7CTXHNp9dQVC0ynMTo18I9xdzvo" />
     {GA_TAG}
-    {maybe_noindex()}
     <link rel="canonical" href="https://balanceship.net/" />
     
     <!-- SEO Meta Tags -->
@@ -67,6 +78,23 @@ def home():
     <meta name="twitter:title" content="Balanceship – Global Financial Dashboard">
     <meta name="twitter:description" content="Explore KPIs, revenue, and financial ratios for thousands of companies.">
     <meta name="twitter:image" content="https://balanceship.net/images/icon.png">
+    
+    <!-- Structured Data JSON-LD -->
+    <script type="application/ld+json">
+    {{
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Balanceship",
+      "url": "https://balanceship.net",
+      "description": "Global financial dashboard for company KPIs and investment insights",
+      "applicationCategory": "FinanceApplication",
+      "offers": {{
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }}
+    }}
+    </script>
     
     <style>
         body {{ font-family: Arial, sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; line-height: 1.6; }}
@@ -140,7 +168,6 @@ def graph():
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {GA_TAG}
-    {maybe_noindex()}
     <link rel="canonical" href="https://balanceship.net/Graph" />
     <title>Company Financial Graphs - Interactive Charts | Balanceship</title>
     <meta name="description" content="View interactive financial graphs of public companies. Track revenue, profit, EBITDA, cash flow and key indicators over time with dynamic visualization tools.">
@@ -148,6 +175,12 @@ def graph():
     <meta property="og:title" content="Financial Graphs - Balanceship">
     <meta property="og:description" content="Interactive financial charts for analyzing company performance over time.">
     <meta property="og:url" content="https://balanceship.net/Graph">
+    <meta property="og:image" content="https://balanceship.net/images/icon.png">
+    
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Financial Graphs - Balanceship">
+    <meta name="twitter:description" content="Interactive financial charts for analyzing company performance over time.">
+    <meta name="twitter:image" content="https://balanceship.net/images/icon.png">
     
     <style>
         body {{ font-family: Arial, sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; line-height: 1.6; }}
@@ -193,7 +226,6 @@ def database():
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {GA_TAG}
-    {maybe_noindex()}
     <link rel="canonical" href="https://balanceship.net/Database" />
     <title>Financial Database - Global Companies Data | Balanceship</title>
     <meta name="description" content="Access a curated database of public companies with financial data from global stock exchanges. Filter by sector, market cap, geography and financial metrics.">
@@ -201,6 +233,12 @@ def database():
     <meta property="og:title" content="Financial Database - Balanceship">
     <meta property="og:description" content="Comprehensive database of global companies with real-time financial data.">
     <meta property="og:url" content="https://balanceship.net/Database">
+    <meta property="og:image" content="https://balanceship.net/images/icon.png">
+    
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Financial Database - Balanceship">
+    <meta name="twitter:description" content="Comprehensive database of global companies with real-time financial data.">
+    <meta name="twitter:image" content="https://balanceship.net/images/icon.png">
     
     <style>
         body {{ font-family: Arial, sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; line-height: 1.6; }}
@@ -250,7 +288,6 @@ def kpi_dashboard():
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {GA_TAG}
-    {maybe_noindex()}
     <link rel="canonical" href="https://balanceship.net/KPI_Dashboard" />
     <title>KPI Dashboards - Financial Metrics Analysis | Balanceship</title>
     <meta name="description" content="Analyze critical KPIs like EBITDA, EPS, ROE, Free Cash Flow and P/E ratios through interactive dashboards. Compare company performance across key financial metrics.">
@@ -258,6 +295,12 @@ def kpi_dashboard():
     <meta property="og:title" content="KPI Dashboards - Balanceship">
     <meta property="og:description" content="Comprehensive KPI analysis tools for evaluating company financial health.">
     <meta property="og:url" content="https://balanceship.net/KPI_Dashboard">
+    <meta property="og:image" content="https://balanceship.net/images/icon.png">
+    
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="KPI Dashboards - Balanceship">
+    <meta name="twitter:description" content="Comprehensive KPI analysis tools for evaluating company financial health.">
+    <meta name="twitter:image" content="https://balanceship.net/images/icon.png">
     
     <style>
         body {{ font-family: Arial, sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; line-height: 1.6; }}
@@ -332,7 +375,6 @@ def who_we_are():
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {GA_TAG}
-    {maybe_noindex()}
     <link rel="canonical" href="https://balanceship.net/Who_we_are" />
     <title>Who We Are - About Balanceship | Our Mission & Team</title>
     <meta name="description" content="Learn about the mission, vision, and team behind Balanceship, your trusted partner for financial data analysis and investment insights.">
@@ -340,6 +382,12 @@ def who_we_are():
     <meta property="og:title" content="About Balanceship - Who We Are">
     <meta property="og:description" content="Discover the team and mission driving innovation in financial data analysis.">
     <meta property="og:url" content="https://balanceship.net/Who_we_are">
+    <meta property="og:image" content="https://balanceship.net/images/icon.png">
+    
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="About Balanceship - Who We Are">
+    <meta name="twitter:description" content="Discover the team and mission driving innovation in financial data analysis.">
+    <meta name="twitter:image" content="https://balanceship.net/images/icon.png">
     
     <style>
         body {{ font-family: Arial, sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; line-height: 1.6; }}
@@ -405,7 +453,7 @@ def robots():
     robots_txt = '''User-agent: *
 Allow: /
 
-Sitemap: https://sitemap.balanceship.net/sitemap.xml'''
+Sitemap: https://balanceship.net/sitemap.xml'''
     return Response(robots_txt, mimetype='text/plain')
 
 # --- MAIN ---
